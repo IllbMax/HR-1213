@@ -1,0 +1,44 @@
+1. Batch Queuing
+1.1 Was bedeutet der Begriff Batch-Queueing
+Batch Queuing beschreibt den Vorgang einer Jobverwaltung auf Rechnersystemen. 
+Die an das Batch-Queuing-System übermittelten Jobs werden in eine Warteschlange 
+platziert und je nach ihren Eigenschaften (z.B. Wartezeit, Laufzeit, Ressourcenverbrauch,...) 
+und der Auslastung des dahinter steckenden Clustersystems zur Ausführung gebracht 
+bzw. nach hinten geschoben.
+
+1.2 Nennen Sie Beispiele für Batch-Queuing-Systeme!
+Oracle Grid Engine, Portable Batch System, LoadLeveler, Condor oder OAR
+
+1.3a) Welches Batch-Queuing-System wird auf dem Cluster verwendet?
+Simple Linux Utility for Resource Management (SLURM)
+
+1.3b) Gibt es eine Möglichkeit, einen bereits abgeschickten Job zu löschen
+(bevor oder während er läuft)?
+Befehl: scancel [job_id]
+Wenn nur laufende bzw nur ausstehende Jobs betroffen sein sollen:
+Befehl: scancel --state=RUNNING(bzw. PENDING) [job_id]
+
+
+2. Paralleles Starten eines Shell-Scripts
+2.4.1 Was fällt Ihnen auf? Versuchen Sie Ihre Beobachtung zu erklären!
+Die zeitliche Abfolge der Ausführungen weist ein bestimmtes Muster auf: 
+Die ersten vier Einträge in timescript.out stammen immer vom selben Knoten,
+während die restlichen Einträge in zufälliger Reihenfolge erfolgen.
+Die Auführung der Skripte geschieht dabei mindestens in der selben Sekunde
+auf allen Knoten.
+
+Dieses Muster könnte mit der Arbeitsweise von SLURM zusammenhängen.
+Eventuell steht ein Knoten mit freien Ressourcen immer direkt zur Verfügung
+und für die restlichen Aufrufe müssen erst entsprechende freie Knoten gefunden
+werden.
+
+
+2.4.2 Könnte man die Datei timescript.out auch innerhalb des Scriptes timescript
+erzeugen? Falls ja: Wie? Falls nein: Warum nicht?
+Theoretisch wäre es sicherlich möglich, aber da timescript jeweils auf unterschiedlichen
+Knoten ausgeführt wird, würde die Ausgabeumleitung innerhalb
+des Skripts auch immer auf dem aktuellen Knoten stattfinden. Um letztlich
+nur eine Ausgabedatei zu erhalten, die auf dem Verwaltungsknoten liegt, müssten alle
+Knoten, die das Skript ausführen, ihre Ausgabedatei auf den Verwaltungsknoten kopieren
+und dort zusammenführen. Somit theoretisch ja, praktisch aber eher umständlich.
+

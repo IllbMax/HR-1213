@@ -1,0 +1,4 @@
+#!/bin/bash
+# 4 Nodes mit je 4 Prozessen nutzen
+#SBATCH -N 3
+srun ./partdiff-seq 1 1 250 2 2 350

@@ -32,6 +32,8 @@ struct calculation_arguments
 	double  ***Matrix;      /* index matrix used for addressing M             */
 	double  *M;             /* two matrices with real values                  */
 	double  h;              /* length of a space between two lines            */
+	double  h_2;		/* neu: length of a space between two lines squared    */
+	double  pi_h;		/* neu: value of PI * arguments->h precomputed         */
 };
 
 struct calculation_results
@@ -49,6 +51,30 @@ struct calculation_results
 struct timeval start_time;       /* time when program started                      */
 struct timeval comp_time;        /* time when calculation completed                */
 
+/**
+ * Cache für den Sinus, bei jedem Schritt genau die gleichen werte berechnet werden
+ * Braucht nur Speicher einer Halben Zeile, wegen der Symmetrie des Sinus 
+ */ 
+double* mysin;
+static void freeMysin()
+{
+   if(mysin != NULL)
+     free(mysin);
+}
+static void initMysin(struct calculation_arguments* arguments)
+{
+   int i;
+   int len = arguments->N; // / 2; /* N ist immer gerade, momentan ohne
+/2, da Matrix noch nicht geachtelt ist */
+   mysin = malloc(sizeof(*mysin) *  len)
+   for(i = 0;  i < len; i++)
+   {
+     mysin[i] = sin((double)(i) * arguments->pi_h);
+   }
+}
+
+
+
 
 /* ************************************************************************ */
 /* initVariables: Initializes some global variables                         */
@@ -60,6 +86,9 @@ initVariables (struct calculation_arguments* arguments, struct calculation_resul
 	arguments->N = options->interlines * 8 + 9 - 1;
 	arguments->num_matrices = (options->method == METH_JACOBI) ? 2 : 1;
 	arguments->h = (float)( ( (float)(1) ) / (arguments->N));
+	arguments->h_2 = arguments->h * arguments->h; /* neu */
+	arguments->pi_h = PI * arguments->h;	/* neu */
+
 
 	results->m = 0;
 	results->stat_iteration = 0;
@@ -180,7 +209,7 @@ initMatrices (struct calculation_arguments* arguments, struct options* options)
 /* getResiduum: calculates residuum                                         */
 /* Input: x,y - actual column and row                                       */
 /* ************************************************************************ */
-double
+/*double
 getResiduum (struct calculation_arguments* arguments, struct options* options, int x, int y, double star)
 {
 	if (options->inf_func == FUNC_F0)
@@ -189,10 +218,10 @@ getResiduum (struct calculation_arguments* arguments, struct options* options, i
 	}
 	else
 	{
-		return ((TWO_PI_SQUARE * sin((double)(y) * PI * arguments->h) * sin((double)(x) * PI * arguments->h) * arguments->h * arguments->h - star) / 4.0);
+		return ((TWO_PI_SQUARE * sin((double)(y) * arguments->pi_h) * sin((double)(x) * arguments->pi_h) * arguments->h_2 - star) / 4.0); // neu
 	}
 }
-
+*/
 /* ************************************************************************ */
 /* calculate: solves the equation                                           */
 /* ************************************************************************ */
@@ -209,6 +238,7 @@ calculate (struct calculation_arguments* arguments, struct calculation_results *
 
 	int N = arguments->N;
 	double*** Matrix = arguments->Matrix;
+	double **Mat2;  /* neu */	
 
 	/* initialize m1 and m2 depending on algorithm */
 	if (options->method == METH_GAUSS_SEIDEL)
@@ -220,24 +250,41 @@ calculate (struct calculation_arguments* arguments, struct calculation_results *
 		m1=0; m2=1;
 	}
 
+	Mat2 = Matrix[m2]; /* neu */
 	while (options->term_iteration > 0)
 	{
 		maxresiduum = 0;
 
 		/* over all rows */
-		for (j = 1; j < N; j++)
+		/* alt: for (j = 1; j < N; j++) */
+		for (i = 1; i < N; i++)
 		{
 			/* over all columns */
-			for (i = 1; i < N; i++)
+			/* for (i = 1; i < N; i++) */
+			for (j = 1; j < N; j++)
 			{
-				star = -Matrix[m2][i-1][j] - Matrix[m2][i][j-1] - Matrix[m2][i][j+1] - Matrix[m2][i+1][j] + 4.0 * Matrix[m2][i][j];
+				double mij = Mat2[i][j]; /* neu */
+				/* alt: star = -Matrix[m2][i-1][j] - Matrix[m2][i][j-1] - Matrix[m2][i][j+1] - Matrix[m2][i+1][j] + 4.0 * Matrix[m2][i][j];
+	
+				alt: star = -Mat2[i-1][j] - Mat2[i][j-1] - Mat2[i][j+1] - Mat2[i+1][j] + 4.0 * mij; */
+				star = (- Mat2[i][j-1] - Mat2[i][j+1] - Mat2[i-1][j] - Mat2[i+1][j]) + 4.0 * mij ;
 
-				residuum = getResiduum(arguments, options, i, j, star);
+				/* alt: residuum = getResiduum(arguments, options, i, j, star); */
+				if (options->inf_func == FUNC_F0)
+				{
+					residuum = ((-star)/4);
+				}
+				else
+				{
+				  /* alt: residuum = ((TWO_PI_SQUARE * sin((double)(j) * arguments->pi_h) * sin((double)(i) * arguments->pi_h) * arguments->h_2 - star)/4); */
+					residuum = ((TWO_PI_SQUARE * mysin[i]) * sin(mysin[j]) * arguments->h_2 - star)/4); /* neu */
+				}
 				korrektur = residuum;
 				residuum = (residuum < 0) ? -residuum : residuum;
 				maxresiduum = (residuum < maxresiduum) ? maxresiduum : residuum;
 
-				Matrix[m1][i][j] = Matrix[m2][i][j] + korrektur;
+				/* alt: Matrix[m1][i][j] = Mat2[i][j] + korrektur; */
+				Matrix[m1][i][j] = mij + korrektur;
 			}
 		}
 
@@ -356,6 +403,10 @@ main (int argc, char** argv)
 	allocateMatrices(&arguments);        /*  get and initialize variables and matrices  */
 	initMatrices(&arguments, &options);            /* ******************************************* */
 
+  if (options->inf_func == FUNC_FPISIN) /* Init Cache für Sinus berechnung */
+    initMysin(arguments);
+
+
 	gettimeofday(&start_time, NULL);                   /*  start timer         */
 	calculate(&arguments, &results, &options);                                      /*  solve the equation  */
 	gettimeofday(&comp_time, NULL);                   /*  stop timer          */
@@ -364,6 +415,7 @@ main (int argc, char** argv)
 	DisplayMatrix("Matrix:",                              /*  display some    */
 			arguments.Matrix[results.m][0], options.interlines);            /*  statistics and  */
 
+  freeMysin();                     /* Cache für Sinus freigeben */
 	freeMatrices(&arguments);                                       /*  free memory     */
 
 	return 0;

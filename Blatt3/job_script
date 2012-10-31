@@ -1,0 +1,8 @@
+#!/bin/bash
+# 4 Nodes mit je 4 Prozessen nutzen
+#SBATCH -N 4 -n 16
+# Output in job_script.out schreiben
+#SBATCH --output=job_script.out
+srun ./timescript > timescript.out
+
+echo "fertig"

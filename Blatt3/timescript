@@ -1,0 +1,4 @@
+#!/bin/bash
+# Datum im Format: Tag hh:mm:ss.ns
+echo "`hostname`: `date +'%a %k:%M:%S.%N'`"
+exit 0
