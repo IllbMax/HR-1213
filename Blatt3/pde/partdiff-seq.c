@@ -34,6 +34,7 @@ struct calculation_arguments
 	double  h;              /* length of a space between two lines            */
 	double  h_2;		/* neu: length of a space between two lines squared    */
 	double  pi_h;		/* neu: value of PI * arguments->h precomputed         */
+	double *mysin;		/* neu: array to precalculate sin		  */
 };
 
 struct calculation_results
@@ -50,30 +51,6 @@ struct calculation_results
 /* time measurement variables */
 struct timeval start_time;       /* time when program started                      */
 struct timeval comp_time;        /* time when calculation completed                */
-
-/**
- * Cache für den Sinus, bei jedem Schritt genau die gleichen werte berechnet werden
- * Braucht nur Speicher einer Halben Zeile, wegen der Symmetrie des Sinus 
- */ 
-double* mysin;
-static void freeMysin()
-{
-   if(mysin != NULL)
-     free(mysin);
-}
-static void initMysin(struct calculation_arguments* arguments)
-{
-   int i;
-   int len = arguments->N; // / 2; /* N ist immer gerade, momentan ohne
-/2, da Matrix noch nicht geachtelt ist */
-   mysin = malloc(sizeof(*mysin) *  len)
-   for(i = 0;  i < len; i++)
-   {
-     mysin[i] = sin((double)(i) * arguments->pi_h);
-   }
-}
-
-
 
 
 /* ************************************************************************ */
@@ -209,7 +186,8 @@ initMatrices (struct calculation_arguments* arguments, struct options* options)
 /* getResiduum: calculates residuum                                         */
 /* Input: x,y - actual column and row                                       */
 /* ************************************************************************ */
-/*double
+/*
+double
 getResiduum (struct calculation_arguments* arguments, struct options* options, int x, int y, double star)
 {
 	if (options->inf_func == FUNC_F0)
@@ -222,6 +200,28 @@ getResiduum (struct calculation_arguments* arguments, struct options* options, i
 	}
 }
 */
+
+/* free array mysin */
+static void freeMysin(struct calculation_arguments* arguments)
+{
+  if(arguments->mysin != NULL)
+    free(arguments->mysin);
+}
+
+/* precalculate the sinus values for the residuum calculation */
+static void initMysin(struct calculation_arguments* arguments)
+{
+  int i;
+  int len = arguments->N; 
+  arguments->mysin = malloc(sizeof(*(arguments->mysin)) *  len);
+  for(i = 0;  i < len; i++)
+  {
+    arguments->mysin[i] = sin((double)(i) * arguments->pi_h);
+  }
+}
+
+
+
 /* ************************************************************************ */
 /* calculate: solves the equation                                           */
 /* ************************************************************************ */
@@ -239,6 +239,7 @@ calculate (struct calculation_arguments* arguments, struct calculation_results *
 	int N = arguments->N;
 	double*** Matrix = arguments->Matrix;
 	double **Mat2;  /* neu */	
+	double *mysin = arguments->mysin;	/* neu */
 
 	/* initialize m1 and m2 depending on algorithm */
 	if (options->method == METH_GAUSS_SEIDEL)
@@ -269,15 +270,15 @@ calculate (struct calculation_arguments* arguments, struct calculation_results *
 				alt: star = -Mat2[i-1][j] - Mat2[i][j-1] - Mat2[i][j+1] - Mat2[i+1][j] + 4.0 * mij; */
 				star = (- Mat2[i][j-1] - Mat2[i][j+1] - Mat2[i-1][j] - Mat2[i+1][j]) + 4.0 * mij ;
 
-				/* alt: residuum = getResiduum(arguments, options, i, j, star); */
+				//residuum = getResiduum(arguments, options, i, j, star);
 				if (options->inf_func == FUNC_F0)
 				{
 					residuum = ((-star)/4);
 				}
 				else
 				{
-				  /* alt: residuum = ((TWO_PI_SQUARE * sin((double)(j) * arguments->pi_h) * sin((double)(i) * arguments->pi_h) * arguments->h_2 - star)/4); */
-					residuum = ((TWO_PI_SQUARE * mysin[i]) * sin(mysin[j]) * arguments->h_2 - star)/4); /* neu */
+					/*residuum = ((TWO_PI_SQUARE * sin((double)(j) * arguments->pi_h) * sin((double)(i) * arguments->pi_h) * arguments->h_2 - star)/4);  neu */
+					residuum = ((TWO_PI_SQUARE * mysin[j] * mysin[i] * arguments->h_2 - star)/4); /* neu */
 				}
 				korrektur = residuum;
 				residuum = (residuum < 0) ? -residuum : residuum;
@@ -285,6 +286,7 @@ calculate (struct calculation_arguments* arguments, struct calculation_results *
 
 				/* alt: Matrix[m1][i][j] = Mat2[i][j] + korrektur; */
 				Matrix[m1][i][j] = mij + korrektur;
+				
 			}
 		}
 
@@ -399,13 +401,10 @@ main (int argc, char** argv)
 	AskParams(&options, argc, argv);              /* ************************* */
 
 	initVariables(&arguments, &results, &options);           /* ******************************************* */
+	initMysin(&arguments);	
 
 	allocateMatrices(&arguments);        /*  get and initialize variables and matrices  */
 	initMatrices(&arguments, &options);            /* ******************************************* */
-
-  if (options->inf_func == FUNC_FPISIN) /* Init Cache für Sinus berechnung */
-    initMysin(arguments);
-
 
 	gettimeofday(&start_time, NULL);                   /*  start timer         */
 	calculate(&arguments, &results, &options);                                      /*  solve the equation  */
@@ -415,8 +414,9 @@ main (int argc, char** argv)
 	DisplayMatrix("Matrix:",                              /*  display some    */
 			arguments.Matrix[results.m][0], options.interlines);            /*  statistics and  */
 
-  freeMysin();                     /* Cache für Sinus freigeben */
+	freeMysin(&arguments);
 	freeMatrices(&arguments);                                       /*  free memory     */
+	
 
 	return 0;
 }
