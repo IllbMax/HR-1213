@@ -45,20 +45,18 @@
 #include "partdiff-seq.h"
 #include <stdio.h>
 
-/* alt: void DisplayMatrix ( char *s, double *v, int interlines ) */
-void DisplayMatrix ( char *s, Matrix_interface *v, int interlines )
+void DisplayMatrix ( char *s, double *v, int interlines )
 {
   FILE *file;
   int x,y;
-  //int lines = 8 * interlines + 9;
+  int lines = 8 * interlines + 9;
 
   printf ( "%s\n", s );
   for ( y = 0; y < 9; y++ )
   {
     for ( x = 0; x < 9; x++ )
     {
-      printf ( "%7.4f", Matrix_interface_getValue(v, y*(interlines+1), x*(interlines+1)));
-      //printf ( "%7.4f", v[y*(interlines+1)*lines+x*(interlines+1)]);
+      printf ( "%7.4f", v[y*(interlines+1)*lines+x*(interlines+1)]);
     }
     printf ( "\n" );
   }
@@ -69,8 +67,7 @@ void DisplayMatrix ( char *s, Matrix_interface *v, int interlines )
     for ( x = 0; x < 9; x++)
     {
       fprintf(file," %7.4f  %7.4f  %7.4f\n", (double)(x)*0.125,(double)(y)*0.125,
-      // v[y*(interlines+1)*lines+x*(interlines+1)]);
-      Matrix_interface_getValue(v, y*(interlines+1), x*(interlines+1)));
+      v[y*(interlines+1)*lines+x*(interlines+1)]);
     }
     fprintf(file,"\n");
   }
