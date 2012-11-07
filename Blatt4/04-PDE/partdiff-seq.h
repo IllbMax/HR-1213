@@ -46,8 +46,6 @@ struct options
 	double  term_precision; /* terminate if precision reached                 */
 };
 
-typedef struct matrix_small Matrix_interface;
-
 /* *************************** */
 /* Some function declarations. */
 /* *************************** */
@@ -55,11 +53,8 @@ typedef struct matrix_small Matrix_interface;
 /* - askparams.c               */
 /* - displaymatrix.c           */
 /* *************************** */
-void AskParams( struct options*, int, char** );
-/* neu */
-void DisplayMatrix ( char*, Matrix_interface*, int );
+void AskParams (struct options*, int, char**);
 
-void DisplayMatrixAddr ( char*, double***, int, int );
+void DisplayMatrix (char*, double*, int);
 
-/* neu */
-double Matrix_interface_getValue(Matrix_interface* mat,int i, int j); 
+void DisplayMatrixAddr (char*, double***, int, int);
