@@ -1,0 +1,10 @@
+Bearbeitungszeit: 220min
+Schwierigkeit: genau richtig
+Lehhreich: etwas
+Verstaendlichkeit: verständlich
+Kommentar: Wäre ganz nett wenn auf dem Aufgabenzettel die Aufgaben
+auch durchnummiert wären, war minimal verwirrend als in der 1. Bonusaufgabe
+Aufgabe 1 erwähnt wurde, aber nirgends Aufgabe 1 auf dem Blatt stand.
+Und für die Abgabeskriptbenachrichtigung fänd ich es gut, wenn anstatt
+"successfull upload" -> "upload successful" ankommt. Sieht irgendwie grammatikalisch
+und rechtschreibtechnisch besser aus.
