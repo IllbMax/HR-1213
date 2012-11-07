@@ -1,0 +1,93 @@
+
+============================================================
+Program for calculation of partial differential equations.  
+============================================================
+(c) Dr. Thomas Ludwig, TU München.
+    Thomas A. Zochler, TU München.
+    Andreas C. Schmidt, TU München.
+============================================================
+Berechnungszeit:    7.634538 s 
+Executed float ops: 17415.553024 MFlop
+Speed:              2281.153493 MFlop/s
+Memory footprint:   16.282486 MiB
+Mem thp (read):     543.869374 MiB/s
+Mem thp (write):    135.967344 MiB/s
+Mem thp (total):    679.836718 MiB/s
+Berechnungsmethode: Jacobi
+Interlines:         128
+Stoerfunktion:      f(x,y)=2pi^2*sin(pi*x)sin(pi*y)
+Terminierung:       Anzahl der Iterationen
+Anzahl Iterationen: 1024
+Norm des Fehlers:   4.611601e-06
+Matrix:
+ 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+ 0.0000 0.0007 0.0013 0.0017 0.0018 0.0017 0.0013 0.0007 0.0000
+ 0.0000 0.0013 0.0024 0.0031 0.0033 0.0031 0.0024 0.0013 0.0000
+
+============================================================
+Program for calculation of partial differential equations.  
+============================================================
+(c) Dr. Thomas Ludwig, TU München.
+    Thomas A. Zochler, TU München.
+    Andreas C. Schmidt, TU München.
+============================================================
+Berechnungszeit:    7.635662 s 
+Executed float ops: 17415.553024 MFlop
+Speed:              2280.817698 MFlop/s
+Memory footprint:   16.282486 MiB
+Mem thp (read):     543.789315 MiB/s
+Mem thp (write):    135.947329 MiB/s
+Mem thp (total):    679.736643 MiB/s
+Berechnungsmethode: Jacobi
+Interlines:         128
+Stoerfunktion:      f(x,y)=2pi^2*sin(pi*x)sin(pi*y)
+Terminierung:       Anzahl der Iterationen
+Anzahl Iterationen: 1024
+Norm des Fehlers:   4.611601e-06
+Matrix:
+ 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+ 0.0000 0.0007 0.0013 0.0017 0.0018 0.0017 0.0013 0.0007 0.0000
+ 0.0000 0.0013 0.0024 0.0031 0.0033 0.0031 0.0024 0.0013 0.0000
+ 0.0000 0.0017 0.0031 0.0040 0.0044 0.0040 0.0031 0.0017 0.0000
+ 0.0000 0.0018 0.0033 0.0044 0.0047 0.0044 0.0033 0.0018 0.0000
+ 0.0000 0.0017 0.0031 0.0040 0.0044 0.0040 0.0031 0.0017 0.0000
+ 0.0000 0.0013 0.0024 0.0031 0.0033 0.0031 0.0024 0.0013 0.0000
+ 0.0000 0.0007 0.0013 0.0017 0.0018 0.0017 0.0013 0.0007 0.0000
+ 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+ 0.0000 0.0017 0.0031 0.0040 0.0044 0.0040 0.0031 0.0017 0.0000
+ 0.0000 0.0018 0.0033 0.0044 0.0047 0.0044 0.0033 0.0018 0.0000
+ 0.0000 0.0017 0.0031 0.0040 0.0044 0.0040 0.0031 0.0017 0.0000
+ 0.0000 0.0013 0.0024 0.0031 0.0033 0.0031 0.0024 0.0013 0.0000
+ 0.0000 0.0007 0.0013 0.0017 0.0018 0.0017 0.0013 0.0007 0.0000
+ 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+
+============================================================
+Program for calculation of partial differential equations.  
+============================================================
+(c) Dr. Thomas Ludwig, TU München.
+    Thomas A. Zochler, TU München.
+    Andreas C. Schmidt, TU München.
+============================================================
+Berechnungszeit:    9.724059 s 
+Executed float ops: 17415.553024 MFlop
+Speed:              1790.975664 MFlop/s
+Memory footprint:   16.282486 MiB
+Mem thp (read):     427.001873 MiB/s
+Mem thp (write):    106.750468 MiB/s
+Mem thp (total):    533.752341 MiB/s
+Berechnungsmethode: Jacobi
+Interlines:         128
+Stoerfunktion:      f(x,y)=2pi^2*sin(pi*x)sin(pi*y)
+Terminierung:       Anzahl der Iterationen
+Anzahl Iterationen: 1024
+Norm des Fehlers:   4.611601e-06
+Matrix:
+ 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
+ 0.0000 0.0007 0.0013 0.0017 0.0018 0.0017 0.0013 0.0007 0.0000
+ 0.0000 0.0013 0.0024 0.0031 0.0033 0.0031 0.0024 0.0013 0.0000
+ 0.0000 0.0017 0.0031 0.0040 0.0044 0.0040 0.0031 0.0017 0.0000
+ 0.0000 0.0018 0.0033 0.0044 0.0047 0.0044 0.0033 0.0018 0.0000
+ 0.0000 0.0017 0.0031 0.0040 0.0044 0.0040 0.0031 0.0017 0.0000
+ 0.0000 0.0013 0.0024 0.0031 0.0033 0.0031 0.0024 0.0013 0.0000
+ 0.0000 0.0007 0.0013 0.0017 0.0018 0.0017 0.0013 0.0007 0.0000
+ 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000
