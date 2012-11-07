@@ -48,32 +48,54 @@ Compileroptimierungen:
 
 Anpassung des Speicherzugriffsmuster:
 
-3. Anpassung: Zeile 217: Neuer Pointer **Mat2 um den Zugriff auf Matrix[m2] 
+3. Anpassung: Zeile 462: Neuer Pointer **Mat2 um den Zugriff auf Matrix[m2] 
 zwischen zu speichern und bei star-Berechnung Speichersuchzeit einzusparen.
 
-4. Anpassung: Zeile 236/240: Tauschen von j und i als Zählvaribalen, damit bei 
+4. Anpassung: Zeile 482/491: Tauschen von j und i als Zählvaribalen, damit bei 
 der Starberechung entsprechend der Kommentare i für die Zeilen und j für die 
 Spalten der Matrix steht, da die Matrix zeilen- und nicht spaltenweise im
 Speicher ablegt ist.
 
-5. Anpassung: Zeile 242: Zugriff auf Matrix[m2][i][j] in mij zwischenspeichern, da 
-zweimal (Zeile: 246, 262 ) auf den Wert zugegriffen wird und so Zugriffszeit eingespart
+5. Anpassung: Zeile 493: Zugriff auf Matrix[m2][i][j] in mij zwischenspeichern, da 
+zweimal (ursprünglich Zeile: 246, 262 ) auf den Wert zugegriffen wird und so Zugriffszeit eingespart
 werden kann.
 
-6. Anpassung: Zeile: 246: Vertauschen der Summanden in der Starberechung, so dass
+6. Anpassung: Zeile: 519: Vertauschen der Summanden in der Starberechung, so dass
 erst auf Werte der gleiche Zeile zugegriffen wird, um mögliche Cache Misses zu vermeiden.
 
-7. Anpassung: Zeile 255: Werte für PI * arguments->h und arguments->h * arguments->h bei
+7. Anpassung: Zeile 528: Werte für PI * arguments->h und arguments->h * arguments->h bei
 der Initialiersierung von calculation_arguments, ab Zeile 58 berechnen und für die
 Residuumsberechnung zwischenspeichern, um ständige Neuberechnung der immer gleichen
 Werte zu verhindern. Hierfür struct calculation_arguments in Zeile 35/36 erweitern.
 
-8. Anpassung: ab Zeile 249: Residuumsberechnung in calculate() durchführen und nicht in 
+8. Anpassung: ab Zeile 528: Residuumsberechnung in calculate() durchführen und nicht in 
 Extrafunktion auslagern um Codesprünge zu unterbinden.
 
 9. Sinuswerte für die Residuumsberechnung vor berechnen. Dazu dem struct calculation_arguments 
-das Array mysin hinzugefügt (Z. 37). Dies in der Funkion initMysin()(Z. 212) mit Werten gefüllt
-und schließlich auf die Werte in der calculate()-Funktioen zugegriffen (Z. 281)
+das Array mysin hinzugefügt (Z. 78). Dies in der Funkion initMysin()(Z. 261) mit Werten gefüllt
+und schließlich auf die Werte in der calculate()-Funktioen zugegriffen (Z. 529)
+
+10. Da die Matrizen gewisse Symmetrien aufweisen, sollte sich die 
+Programmlaufzeit reduzieren lassen, indem man die betroffenen Matrizenteile
+nur einmal berechnet. Dazu haben wir folgende Datenaufteilung vorgenommen:
+
+Matrixverkleinerung:
+->Gauss Seidel: 1/2    (A+B +C)
+->Jakobi (f = 0): 1/4    (A + B)
+->Jakobi(sin):  1/8      (A)
+
+Übersicht über die Auftreilung der Matrix:
+|  \             / |
+|  A  \     /     |
+|------- X        |
+|  B  /      \    |
+|  /      C      \|
+
+
+Mathematische Optimierung:
+
+11. Die Divison durch 4 in der residuums- und starberechnung entfernt und stattdessen
+in der Starberechnung die Faktor 0.25 hinzugefügt.
 
 Messwerte jeweils in Sekunden
 #Anpassungen	1. Messung	2. Messung	3. Messung	Mittel		%
@@ -87,6 +109,8 @@ Messwerte jeweils in Sekunden
 7		94.614089	93.995899	95.394860	94.668282	53.7	
 8		93.350470	93.828295	93.346180	93.508315       53.1	
 9		16.678611	16.767020	16.773099	16.739576	9.5
+10              22.622328	22.618751	22.706306	22.649128	12.9
+
 
 Zwischen jeder Codeanpassung stimmte die Ausgabe der Matrixwerte stets mit der Ausgabe des 
 Ursprungsprogramm überein.
@@ -107,21 +131,8 @@ index % time    self  children    called     name
                 0.00    0.00       1/1           DisplayMatrix [6]
                 0.00    0.00       1/1           freeMatrices [9]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Sorry für den teilweise hässlichen Code. Wir wollten die unsere einzelnen 
+Schritte dokumentieren und haben uns für die teilweise sehr großen 
+auskommentierten Blöcke entschieden. Insgesamt wurde der Quellcode nochmal
+per indent neu formatiert, um etwas Lesbarkeit zu retten. 
 
