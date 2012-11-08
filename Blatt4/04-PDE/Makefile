@@ -7,6 +7,7 @@ LFLAGS = $(CFLAGS)
 LIBS   = -lm
 
 OBJS = partdiff-seq.o askparams.o displaymatrix.o
+# Objektvariablen für das Aufgabenblatt
 OBJS_OMP = partdiff-openmp.o askparams.o displaymatrix.o
 OBJS_OMP_S = partdiff-openmp_spalten.o askparams.o displaymatrix.o
 OBJS_OMP_E = partdiff-openmp_element.o askparams.o displaymatrix.o
@@ -21,8 +22,7 @@ all: partdiff-seq partdiff-openmp
 partdiff-seq: $(OBJS) Makefile
 	$(CC) $(LFLAGS) -o $@ $(OBJS) $(LIBS)
 
-# Target für Aufgabe 1, mit flag ZEILEN um im Programmcode ein paar Zeilen
-# zu sparen
+# Target für Aufgabe 1
 partdiff-openmp: $(OBJS_OMP) Makefile
 	$(CC) $(LFLAGS) -o $@ $(OBJS_OMP) $(LIBS)
 
