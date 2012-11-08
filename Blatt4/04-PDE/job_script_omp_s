@@ -1,3 +1,0 @@
-#!/bin/bash
-#SBATCH -N 3
-srun ./partdiff-openmp-spalten 12 2 1024 2 2 512

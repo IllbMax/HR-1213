@@ -16,7 +16,8 @@
 \parindent0mm
 \setcapindent{0pt}
 \subsubsection*{Parallelisierung mit OpenMP}
-\begin{table}
+Wie in Tabelle 1 zu sehen wurde mit den vorgenommenen Änderungen am Quelltext ein Speedup um den Faktor neun erreicht. Mit einer höheren Iterationszahl hätte dieser Wert sich wahrscheinlich noch ein wenig höher schrauben lassen.
+\begin{table}[!h]
 \begin{tabular}{|l|r|r|r|r|}
 \hline
 Implementation&1. Messung&2. Messung&3. Messung&Mittel\\
@@ -29,6 +30,12 @@ OpenMP	&137,0301	&122,0230	&121,7702&	126,9411\\
 \caption{\textbf{Laufzeitmessung der verschiedenen Implementationen.}\\ 12 Threads, 512 Interlines, 1024 Iterationen, Messwerte jeweils in Sekunden}
 \end{table}
 \subsubsection*{Umsetzung der Datenaufteilung}
+Die Umsetzung der Datenaufteilung wurde jeweils in einer eigenen \texttt{c-Datei} vorgenommen bzw. die zeilenweise Aufteilung in der ursprünglichen \texttt{partdiff-openmp.c}, da sie genau der ursprünglichen Aufteilung entspricht. Es wurden die in Tabelle 2 aufgeführten Aufrufparameter gewählt, um mit einer relativ großen Datenmenge (1024 Interlines) zu arbeiten.
+
+Dabei hat sich gezeigt, dass die spaltenweise Aufteilung mit Abstand am langsamsten arbeitet. Diese Tatsache ist vermutlich wieder mit der hohen Anzahl cache-misses zu erklären. Durch die Parallelisierung können zwar mehr Daten gleichzeitig bearbeitet werden, jedoch müssen die nachfolgenden Spaltenelemente immer erst zusätzlich in den Cache geladen werden. Für den Fall, dass manche Threads schneller als andere arbeiten, könnte sich hier eventuell für benachbarte Spalten positive Effekte einstellen. Durch das zeilenweise Caching könnte für hinterherhinkende aus Datensicht benachbarte Threads bereits das benötigte Spaltenelement durch den schnelleren Thread vorgecached sein.
+
+Der Geschwindigkeitsunterschied zwischen der element- und zeilenweise Aufteilung lässt sich vermutlich durch den erhöhten Verwaltungsaufwand bei der elementweise Aufteilung erklären. Da für jedes neue Element ein neuer Thread erstellt bzw. bei Wiederverwendung wohlmöglich reinitialisiert werden muss, verlangsamt dieser zusätliche Overhead die Werteberechnung, da mehr Zeit mit Datenzuteilung als Rechnen verbraucht wird. 
+
 \begin{table}[!h]
 \begin{tabular}{|l|r|r|r|r|r|}
 \hline
@@ -45,6 +52,10 @@ Elemente	&307,6507	&306,1153	&307,3371	&307,0344\\
 \end{table}
 
 \subsubsection*{Vergleich der OpenMP-Scheduling-Algorithmen}
+Zum Test der Scheduling-Algorithmen wurde die element- sowie spaltenweise Aufteilung verwendet. Für die elementweise Aufteilung stellt sich die statische Verteilung von je zwei Interationen den Testergebnisse nach am effizientesten heraus. Die starke Zeitzunahme für \textit{static, 4} lässt sich eventuell mit einer Lastspitze auf dem Cluster erklären, da für die nachfolgenden Messungen wieder eine deutliche Verbesserung in den Berechnungszeiten zu sehen ist. Auch im Vergleich zu der Leistungsmessung aus Aufgabe 2 lässt sich ein leichter Zugewinn bei der Ausführungszeit gegenüber dem default-Scheduling erkennen.
+
+Für die spaltenweise Aufteilung stellt sich kein Algorithmus leistungsfähiger als ein anderer heraus. Auch hier wird die Laufzeit wahrscheinlich wieder hauptsächlich durch die hohe Anzahl an cache-misses beeinflusst.
+
 
 \begin{table}[!h]
 \begin{tabular}{|l|r|r|r|r|r|}
@@ -94,6 +105,8 @@ guided	&427,6589	&428,5139	&428,7597	&428,3108\\
 \caption{\textbf{Laufzeitmessung der Scheduling-Algorithmen für \\spaltenweise Datenaufteilung.} 12 Threads, 1024 Interlines, 512 \\Iterationen, Messwerte jeweils in Sekunden}
 \end{table}
 \subsubsection*{Leistungsanalyse}
+Die Messungen wurden jeweils mit den in Tabelle 1 bzw. 2 angegebenen Parametern durchgeführt, wobei die Sinus-Störfunktion verwendet wurde. Für die Variation in der Threadzahl lässt sich wie in Abbildung 1 zu sehen eine nahezu exponentielle Abnahme in der Laufzeit feststellen. Am Anfang skaliert die Leistung sehr gut mit der Zunahme an Threads bis im zweistelligen Threadbereich die Leistung sich nur noch geringfügig verbessert. Dies mag zu einem daran liegen, dass wir uns mit zunehmender Threadzahl der optimalen Laufzeit der openMP-Parallelisierung annähern, zusätzlich wird wohl auch der zunehmende Aufwand für die Threadverwaltung eine gewisse Rolle spielen.
+
 \begin{table}[!h]
 \begin{tabular}{|l|r|r|r|r|r|}
 \hline
@@ -128,9 +141,11 @@ Threadzahl&1. Messung&2. Messung&3. Messung&Mittel\\
 \caption{\textbf{Laufzeitmessung für verschiedene Threadzahlen.} \\512 Interlines, 1024 Iterationen, Messwerte jeweils in Sekunden}
 \end{table}
 \begin{figure}[!h]
-\includegraphics[height=7cm]{/home/christian/Uni/5_Semester/HR/HR-1213/Blatt4/leistungsgraph.png}
+\includegraphics[width=14cm]{/home/christian/Uni/5_Semester/HR/HR-1213/Blatt4/leistungsgraph.png}
 \caption{\textbf{Laufzeitmessung für verschiedene Threadzahlen.} \\512 Interlines, 1024 Iterationen, Messwerte jeweils in Sekunden}
 \end{figure}
+
+Für die Messwerte der variierenden Interlinezahlen lässt sich ebenfalls ein exponentielles Wachstum feststellen. Dieses Wachstum würde sich wohl jedoch auch bei einem nicht parallelisiertem Programm einstellen, da wir nichts am verwendeten Algorithmus verändert haben und dieser eine mindestens quadratische Laufzeit besitzt. Die Laufzeiten würde zwar sicherlich etwas stärker ansteigen und auch höhere Werte aufweisen, da die zur Verfügung stehenden Rechnerressourcen nicht effizient genutzt werden, aber der starke Laufzeitenanwachs liegt einfach an der zugrunde liegenden Problemstellung. 
 
 \begin{table}[!h]
 \begin{tabular}{|l|r|r|r|r|r|}
@@ -138,15 +153,25 @@ Threadzahl&1. Messung&2. Messung&3. Messung&Mittel\\
 Interlines&1. Messung&2. Messung&3. Messung&Mittel\\
 \hline
 1&	0,0084	&0,0079	&0,0092	&0,0085\\
+\hline
 2&	0,0120	&0,0124	&0,0115	&0,0120\\
+\hline
 4&	0,0197	&0,0184	&0,0203	&0,0194\\
+\hline
 8&	0,0673	&0,0450	&0,0553	&0,0559\\
+\hline
 16&	0,1353	&0,1673	&0,1755	&0,1594\\
+\hline
 32&	0,5009	&0,5733	&0,6675	&0,5806\\
+\hline
 64&	1,9164	&2,3005	&2,5123	&2,2430\\
+\hline
 128&	7,6345	&7,6356	&9,7240	&8,3314\\
+\hline
 256&	30,7198	&33,1656	&37,9655	&33,9503\\
+\hline
 512&	121,6844	&122,5537	&131,9247	&125,3876\\
+\hline
 1024&	486,2178	&488,4605	&545,6306	&506,7696\\
 
 \hline
