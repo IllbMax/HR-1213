@@ -8,3 +8,6 @@ Aufgabe 1 erwähnt wurde, aber nirgends Aufgabe 1 auf dem Blatt stand.
 Und für die Abgabeskriptbenachrichtigung fänd ich es gut, wenn anstatt
 "successfull upload" -> "upload successful" ankommt. Sieht irgendwie grammatikalisch
 und rechtschreibtechnisch besser aus.
+Außerdem vielleicht nochmal genauer schreiben, dass mit "die schnellste Parallelisierung"
+die Variante mit den wenigsten interlines gemeint ist.
+
