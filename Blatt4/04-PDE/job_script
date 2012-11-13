@@ -1,0 +1,5 @@
+#!/bin/bash
+# 1 Nodes mit je 1 Prozessen nutzen (threads weden im Programm angegeben)
+#SBATCH -N 1
+
+srun ./partdiff-seq $*
