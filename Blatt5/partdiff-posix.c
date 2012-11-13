@@ -432,7 +432,10 @@ calculateThread (void* args)
 		thread_args->maxresiduum = calcLoop(Matrix_In, Matrix_Out, from, to, N, h, options);
 
 
-		pthread_barrier_wait(&barrier); /* darauf warten, dass alle Threads ihre Zeilen berechnet haben */
+		
+		/* darauf warten, dass alle Threads ihre Zeilen berechnet haben und der Leiterthread
+		 * das maxresiduum neuberechnet und die Abbrechbedingung ggfs angepasst hat (ab Z. 341)*/
+		pthread_barrier_wait(&barrier); 
 
 		/* exchange m1 and m2 */
 		i = m1;

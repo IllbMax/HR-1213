@@ -4,6 +4,7 @@
 \usepackage{ngerman}
 \usepackage{graphicx}
 \usepackage{enumerate}
+\usepackage{float}
 \usepackage[font=small,labelfont=bf,singlelinecheck=false]{caption}
 \usepackage[headsepline,plainheadsepline]{scrpage2}
 \pagestyle{scrheadings}
@@ -14,6 +15,7 @@
 
 \begin{document}
 \parindent0mm
+\restylefloat{figure}
 \setcapindent{0pt}
 \subsubsection*{Parallelisierung mit OpenMP}
 Wie in Tabelle 1 zu sehen wurde mit den vorgenommenen Änderungen am Quelltext ein Speedup um den Faktor neun erreicht. Mit einer höheren Iterationszahl hätte dieser Wert sich wahrscheinlich noch ein wenig höher schrauben lassen.
@@ -104,8 +106,10 @@ guided	&427,6589	&428,5139	&428,7597	&428,3108\\
 \end{tabular}
 \caption{\textbf{Laufzeitmessung der Scheduling-Algorithmen für \\spaltenweise Datenaufteilung.} 12 Threads, 1024 Interlines, 512 \\Iterationen, Messwerte jeweils in Sekunden}
 \end{table}
+\vspace{5cm}
 \subsubsection*{Leistungsanalyse}
-Die Messungen wurden jeweils mit den in Tabelle 1 bzw. 2 angegebenen Parametern durchgeführt, wobei die Sinus-Störfunktion verwendet wurde. Für die Variation in der Threadzahl lässt sich wie in Abbildung 1 zu sehen eine nahezu exponentielle Abnahme in der Laufzeit feststellen. Am Anfang skaliert die Leistung sehr gut mit der Zunahme an Threads bis im zweistelligen Threadbereich die Leistung sich nur noch geringfügig verbessert. Dies mag zu einem daran liegen, dass wir uns mit zunehmender Threadzahl der optimalen Laufzeit der openMP-Parallelisierung annähern, zusätzlich wird wohl auch der zunehmende Aufwand für die Threadverwaltung eine gewisse Rolle spielen.
+\textit{Wir haben die Messungen durchgeführt bevor es zu der Diskussion auf der Mailingliste kam. Der dritte Absatz der Aufgabenstellung wurde dabei so interpretiert, dass die \textquotedblleft schnellste Parallelisierung\textquotedblright die effizienteste sein soll also Messung 1 mit 12 Threads.}
+\vspace{5mm}
 
 \begin{table}[!h]
 \begin{tabular}{|l|r|r|r|r|r|}
@@ -140,12 +144,16 @@ Threadzahl&1. Messung&2. Messung&3. Messung&Mittel\\
 \end{tabular}
 \caption{\textbf{Laufzeitmessung für verschiedene Threadzahlen.} \\512 Interlines, 1024 Iterationen, Messwerte jeweils in Sekunden}
 \end{table}
-\begin{figure}[!h]
-\includegraphics[width=14cm]{/home/christian/Uni/5_Semester/HR/HR-1213/Blatt4/leistungsgraph.png}
-\caption{\textbf{Laufzeitmessung für verschiedene Threadzahlen.} \\512 Interlines, 1024 Iterationen, Messwerte jeweils in Sekunden}
+
+Die Messungen wurden jeweils mit den in Tabelle 1 bzw. 2 angegebenen Parametern durchgeführt, wobei die Sinus-Störfunktion verwendet wurde. Für die Variation in der Threadzahl lässt sich wie in Abbildung 1 zu sehen eine starke Abnahme in der Laufzeit feststellen. Am Anfang skaliert die Leistung sehr gut mit der Zunahme an Threads bis im zweistelligen Threadbereich die Leistung sich nur noch geringfügig verbessert. 
+
+Dies mag zu einem daran liegen, dass wir uns mit zunehmender Threadzahl der optimalen Laufzeit der openMP-Parallelisierung annähern, zusätzlich wird wohl auch der zunehmende Aufwand für die Threadverwaltung eine gewisse Rolle spielen.
+\begin{figure}[!ht]
+\includegraphics[width=14cm, height=8cm]{/home/christian/Uni/5_Semester/HR/HR-1213/Blatt4/leistungsgraph.png}
+\caption{\textbf{Laufzeitmessung für verschiedene Threadzahlen.} \\512 Interlines, 1024 Iterationen}
 \end{figure}
 
-Für die Messwerte der variierenden Interlinezahlen lässt sich ebenfalls ein exponentielles Wachstum feststellen. Dieses Wachstum würde sich wohl jedoch auch bei einem nicht parallelisiertem Programm einstellen, da wir nichts am verwendeten Algorithmus verändert haben und dieser eine mindestens quadratische Laufzeit besitzt. Die Laufzeiten würde zwar sicherlich etwas stärker ansteigen und auch höhere Werte aufweisen, da die zur Verfügung stehenden Rechnerressourcen nicht effizient genutzt werden, aber der starke Laufzeitenanwachs liegt einfach an der zugrunde liegenden Problemstellung. 
+
 
 \begin{table}[!h]
 \begin{tabular}{|l|r|r|r|r|r|}
@@ -176,6 +184,14 @@ Interlines&1. Messung&2. Messung&3. Messung&Mittel\\
 
 \hline
 \end{tabular}
-\caption{\textbf{Laufzeitmessung für verschiedene Interlinezahlen.} \\12 Threads, 1024 Iterationen, Messwerte jeweils in Sekunden}
+\caption{\textbf{Laufzeitmessung für verschiedene Interlinezahlen.} \\12 Threads, 1024 Iterationen}
 \end{table}
+ 
+
+
+\begin{figure}[H]
+\includegraphics[width=14cm]{/home/christian/Uni/5_Semester/HR/HR-1213/Blatt4/leistungsgraph2.png}
+\caption{\textbf{Laufzeitmessung für verschiedene Threadzahlen.} 12 Threads,\\ 1024 Iterationen, Messwerte jeweils in Sekunden}
+\end{figure}
+Für die Messwerte der variierenden Interlinezahlen lässt sich ebenfalls ein extrem starkes Wachstum feststellen. Wie in Abbildung 2 zu sehen, ist das Wachstum so stark, dass die Messwerte für geringe Interlinezahlen im Vergleich zu hohen Interlinezahlen verschwinden. Dieses Wachstum würde sich wohl jedoch auch bei einem nicht parallelisiertem Programm einstellen, da wir nichts am verwendeten Algorithmus verändert haben und dieser eine mindestens quadratische Laufzeit besitzt. Die Laufzeiten würde zwar sicherlich im Verhältnis stärker ansteigen und auch höhere Werte aufweisen, da die zur Verfügung stehenden Rechnerressourcen nicht effizient genutzt werden, aber die starke Laufzeitenzunahme liegt einfach an der zugrunde liegenden Problemstellung.
 \end{document}
